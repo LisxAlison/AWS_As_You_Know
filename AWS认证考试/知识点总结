@@ -1,0 +1,23 @@
+********以下知识点全是在学习过程中基于个人的理解总结的，可能出现偏差********
+
+----S3----
+S3 Clacier查询时间： min~hour级别
+
+S3 Glacier Deep Archive查询时间： 最短12h
+
+
+----加速----
+CloudFront Edge：下载加速
+
+Amazon S3 Trasnfer Acceleration Edge：上传加速（使用了cloudfront的边缘节点）
+
+
+----加密认证----
+AWS Secret Manager：用于DB凭证、API密钥、OAuth令牌
+(负责login的用户名密码的感觉)
+
+AWS key Managemennt Service(KMS):加密密钥
+（负责加密数据）
+
+AWS CloudHSM：生成密钥，强化加密,可以与KMS结合使用（CloudHSM可以作为KSM的密钥库）
+
