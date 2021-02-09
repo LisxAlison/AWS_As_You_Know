@@ -1,0 +1,5 @@
+AWS IOT 可以将iot设备连接到其他设备，或将iot设备连接到其他云服务（如lambda）。
+
+AWS IOT Core支持以下协议：
+MQTT、基于WSS的MQTT（websocket安全）、HTTPS、LoRaWAN（长范围宽区域网络）
+
