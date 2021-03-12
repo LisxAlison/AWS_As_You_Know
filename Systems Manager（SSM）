@@ -1,0 +1,11 @@
+使用SSM做树莓派集中管理服务（可发指令，可shell）
+
+1.检查树莓派版本，看是否是ssm所支持的
+https://docs.aws.amazon.com/zh_cn/systems-manager/latest/userguide/prereqs-operating-systems.html
+
+树莓派查看系统版本命令：
+sudo lsb_release –a
+cat /etc/os-release
+
+用于c测试的树莓派系统版本是（Raspbian GNU/Linux buster），可以接入SSM
+
