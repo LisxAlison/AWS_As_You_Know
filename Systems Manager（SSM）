@@ -68,6 +68,7 @@ timestamp单位是秒
 bash参考：
 #!/bin/bash
 aws ssm create-activation --default-instance-name TEST-Instance001 --iam-role SSMServiceRole --registration-limit 10 --region cn-north-1 --tags "Key=project, Value=xxxproject" --expiration-date 1617249600 >> awsssmcode.txt; echo "TEST-Instance001" >>awsssmcode.txt
+会返回激活码，json格式
 
 >step 5.
 安装SSM代理
