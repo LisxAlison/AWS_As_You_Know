@@ -1,11 +1,108 @@
 使用SSM做树莓派集中管理服务（可发指令，可shell）
 
-1.检查树莓派版本，看是否是ssm所支持的
+>step 1.
+检查树莓派版本，看是否是ssm所支持的
 https://docs.aws.amazon.com/zh_cn/systems-manager/latest/userguide/prereqs-operating-systems.html
-
 树莓派查看系统版本命令：
 sudo lsb_release –a
 cat /etc/os-release
-
 用于c测试的树莓派系统版本是（Raspbian GNU/Linux buster），可以接入SSM
+
+>step 2.
+安装aws-cli
+https://docs.aws.amazon.com/cli/latest/userguide/install-cliv2-linux.html
+安装命令如下：
+$ curl "https://awscli.amazonaws.com/awscli-exe-linux-aarch64.zip" -o "awscliv2.zip"
+unzip awscliv2.zip
+sudo ./aws/install
+zip文件可能无法下载，可以自行下载后upload到树莓派安装
+
+每次执行aws命令免输入密钥
+https://stackoverflow.com/questions/32164949/aws-cli-authentication
+文件夹.aws/credentials 设定密钥
+[default]
+aws_access_key_id = xxxxxxxxxxxxxxxxx
+aws_secret_access_key = xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+
+文件.aws/config设定区域
+[default]
+region = us-east-1
+output = json
+
+>step 3.
+3. 为Hybrid Environment创建IAM服务角色。
+参考：
+https://docs.aws.amazon.com/zh_cn/systems-manager/latest/userguide/sysman-service-role.html
+
+在树莓派创建SSMService-Trust.json文件，内容如下：
+{
+            "Version": "2012-10-17",
+            "Statement": {
+                "Effect": "Allow",
+                "Principal": {"Service": "ssm.amazonaws.com"},
+                "Action": "sts:AssumeRole"
+            }
+            }
+
+在树莓派使用aws命令行执行以下内容( file:// 一定要有)
+aws iam create-role \ --role-name SSMServiceRole \ --assume-role-policy-document file://SSMService-Trust.json
+
+awscli 配置的账号需要附件以下权限：
+AmazonSSMFullAccess -- SSM访问权限
+IAMFullAccess -- 用户能够创建Role的权限，没有的话createRole命令执行不了，创建完Role可以去掉
+
+>step 4.
+激活实例
+参考：
+https://docs.aws.amazon.com/zh_cn/systems-manager/latest/userguide/sysman-managed-instance-activation.html
+将local树莓派连入SSM属于混合环境一类，选择 Hybrid Activations (混合激活)：
+(1) Instance limit （实例限制） 字段中，指定树莓派总数。默认值为 1 个。
+(2) IAM role name （角色名称） 部分中，选择一个服务角色选项，该选项可让您的服务器和 VMs 在云AWS Systems Manager中与 进行通信，选择我们之前使用create-role命令创建的SSMServiceRole角色
+(3) Activation expiration date 指定过期日期，写到未来30天
+(4) Create activation （创建激活）Systems Manager 立即将激活代码和 ID 返回到 控制台，记下激活码和激活ID
+
+使用awscli生成激活码
+参考：
+https://docs.aws.amazon.com/cli/latest/reference/ssm/create-activation.html
+timestamp单位是秒
+bash参考：
+#!/bin/bash
+aws ssm create-activation --default-instance-name TEST-Instance001 --iam-role SSMServiceRole --registration-limit 10 --region cn-north-1 --tags "Key=project, Value=xxxproject" --expiration-date 1617249600 >> awsssmcode.txt; echo "TEST-Instance001" >>awsssmcode.txt
+
+>step 5.
+安装SSM代理
+参考：
+https://docs.aws.amazon.com/zh_cn/systems-manager/latest/userguide/sysman-install-managed-linux.html
+
+在树莓派执行以下命令：
+
+sudo curl https://s3.amazonaws.com/ec2-downloads-windows/SSMAgent/latest/debian_arm/amazon-ssm-agent.deb -o /tmp/ssm/amazon-ssm-agent.deb
+
+sudo dpkg -i /tmp/ssm/amazon-ssm-agent.deb
+
+sudo service amazon-ssm-agent stop
+
+sudo amazon-ssm-agent -register -code "activation-code" -id "activation-id" -region "region"
+
+sudo service amazon-ssm-agent start
+
+若无法下载deb文件，可以使用附件中下载好的文件
+
+代理启动后，可以在管理实例中看到
+若设备断开连接，状态会在10分钟左右改成networking lost
+
+Registered instance代表激活次数，与真正几个树莓派无关
+
+>step 6.
+使用Run command
+远程执行指令（使用的是标准instance，后续可以改为高级instance）
+参考：
+https://docs.aws.amazon.com/zh_cn/systems-manager/latest/userguide/sysman-install-managed-linux.html
+
+>step 7.
+使用Session Manager
+远程执行shell（使用的是高级instance，按小时收费，每小时 0.00695 USD，可以切换为标准instance）
+价格参考：
+https://aws.amazon.com/cn/systems-manager/pricing/
+标准instance和高级instance可以切换，高级切换为标准需要30分钟左右
 
