@@ -1,0 +1,24 @@
+树莓派安装时需要了解系统内核
+aws cli v2支持aarch64，暂时不支持32位的armhf
+32位可以考虑v1版本
+如果是像S3传文件之类的工作，可以使用Boto3
+
+安装aws-cli V2
+https://docs.aws.amazon.com/cli/latest/userguide/install-cliv2-linux.html
+安装命令如下：
+$ curl "https://awscli.amazonaws.com/awscli-exe-linux-aarch64.zip" -o "awscliv2.zip"
+unzip awscliv2.zip
+sudo ./aws/install
+zip文件可能无法下载，可以自行下载后upload到树莓派安装
+
+每次执行aws命令免输入密钥
+https://stackoverflow.com/questions/32164949/aws-cli-authentication
+文件夹.aws/credentials 设定密钥
+[default]
+aws_access_key_id = xxxxxxxxxxxxxxxxx
+aws_secret_access_key = xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+
+文件.aws/config设定区域
+[default]
+region = us-east-1
+output = json
