@@ -4,6 +4,7 @@ Lambda这类计算服务被叫做FaaS
 Lambda中除了代码外，还需要包含代码需要引用的库，这样可以确保函数的独立性和可移植性
 方法一：直接打包代码和库，但缺点是没有通用性
 方法二：将通用文件打包到层，命名规则 zip名:share_package.zip,内含目录结构：python/test2.py,主函数可以引入：import test2
+      （参考：https://aws.amazon.com/cn/blogs/china/use-aws-lambda-layer-function/）
 
 两种权限：
 1.IAM权限，谁能使用服务（用户A、用户B..）
@@ -11,13 +12,28 @@ Lambda中除了代码外，还需要包含代码需要引用的库，这样可�
 
 调用方式：
 Lambbda每次调用都使用一份独立的运行环境，如果同时涌入大量请求，并发会增加。
-为了避免资源被单个函数大量占用，Lambda设定了并发限制，如果触发限制，就会被限流导致调用失败。
+为了避免资源被单个函数大量占用，Lambda设定了并发限制，如果触发限制，就会被限流导致调用失败
+1.同步调用，阻塞后等待结果，默认的模式
+2.异步调用，使用SNS，SQS队列重试函数调用
 
-1.
+层：
+保存共同的代码和库，可多个function公用
+
+生命周期：
+1.冷启动，函数第一次调用时会在共享的EC2池子里挑选一台合适的机器，下载用户的函数代码和关联层，并启动一个容器置入代码，最后执行函数的入口函数（handler）
+2.热启动，刚执行完的容器不会被立刻删除，仅需唤醒函数执行
+
+Lambda隔离：
+最初的做法是一人一机，即每台虚拟机上仅运行单个用户的函数容器。
+后来AWS自行研发了Firecracker技术，提供了虚拟机级别的隔离。
+
+
+
 
 参考：
-https://zhuanlan.zhihu.com/p/106513886
-lambda层的使用：https://aws.amazon.com/cn/blogs/china/use-aws-lambda-layer-function/
-https://aws.amazon.com/cn/blogs/china/firecracker-lightweight-virtualization-for-serverless-computing/
+lambda基础：https://zhuanlan.zhihu.com/p/106513886
+lambda层的使用&包引用：https://aws.amazon.com/cn/blogs/china/use-aws-lambda-layer-function/
+预配置并发&冷启动热启动测试：https://aws.amazon.com/cn/blogs/china/introduction-to-lambda-pre-configured-concurrency/
+Firecracker容器技术：https://aws.amazon.com/cn/blogs/china/firecracker-lightweight-virtualization-for-serverless-computing/
 https://aws.amazon.com/cn/blogs/china/deep-analysis-aws-firecracker-principle-virtualization-container-runtime-technology/
 https://zhuanlan.zhihu.com/p/114898159
