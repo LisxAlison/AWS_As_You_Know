@@ -1,0 +1,23 @@
+Lambda这类计算服务被叫做FaaS
+
+构成：
+Lambda中除了代码外，还需要包含代码需要引用的库，这样可以确保函数的独立性和可移植性
+方法一：直接打包代码和库，但缺点是没有通用性
+方法二：将通用文件打包到层，命名规则 zip名:share_package.zip,内含目录结构：python/test2.py,主函数可以引入：import test2
+
+两种权限：
+1.IAM权限，谁能使用服务（用户A、用户B..）
+2.Role执行角色，服务可以调用谁(DynamoDB、S3..)
+
+调用方式：
+Lambbda每次调用都使用一份独立的运行环境，如果同时涌入大量请求，并发会增加。
+为了避免资源被单个函数大量占用，Lambda设定了并发限制，如果触发限制，就会被限流导致调用失败。
+
+1.
+
+参考：
+https://zhuanlan.zhihu.com/p/106513886
+lambda层的使用：https://aws.amazon.com/cn/blogs/china/use-aws-lambda-layer-function/
+https://aws.amazon.com/cn/blogs/china/firecracker-lightweight-virtualization-for-serverless-computing/
+https://aws.amazon.com/cn/blogs/china/deep-analysis-aws-firecracker-principle-virtualization-container-runtime-technology/
+https://zhuanlan.zhihu.com/p/114898159
