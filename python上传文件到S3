@@ -1,0 +1,29 @@
+1. 安装boto3
+$ pip3 install boto3
+
+2. 创建存储桶mybucket
+
+3. 创建 uploadphoto.py 文件，代码如下：
+
+import os
+import datetime
+import socket
+from boto3.session import Session
+
+hostname = socket.gethostname()
+filename=hostname+"_"+str(datetime.datetime.now())+".jpg"
+filename = filename.replace(' ','-')
+os.system("sudo fswebcam " + filename)
+aws_key = "aws user access key"
+aws_secret = "aws user access secert"
+session = Session(aws_access_key_id=aws_key,aws_secret_access_key=aws_secret,region_name="cn-north-1")
+s3 = session.resource("s3")
+client = session.client("s3")
+bucket = "mybucket"
+upload_data = open("./"+filename, "rb")
+file_obj = s3.Bucket(bucket).put_object(Key=filename,Body=upload_data)
+
+4.将uploadphoto.py路径映射到全局命令
+sudo ln -s /home/pi/xxx/upload_photo/uploadphoto.py /usr/bin/uploadphoto.py
+
+5. 任意目录执行 python3 uploadphoto.py 可以上传照片到S3
