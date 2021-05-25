@@ -24,7 +24,11 @@ AWS相关问题总结
 * SSM(System Manager)
 
   https://github.com/LisxAlison/AWS_As_You_Know/blob/main/Systems%20Manager%EF%BC%88SSM%EF%BC%89
-  
+
+* 使用python上传文件到S3
+
+  https://github.com/LisxAlison/AWS_As_You_Know/blob/main/python%E4%B8%8A%E4%BC%A0%E6%96%87%E4%BB%B6%E5%88%B0S3
+
 * Lambda概念
 
   https://github.com/LisxAlison/AWS_As_You_Know/blob/main/lambda
