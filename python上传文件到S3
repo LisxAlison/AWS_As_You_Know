@@ -23,6 +23,26 @@ bucket = "mybucket"
 upload_data = open("./"+filename, "rb")
 file_obj = s3.Bucket(bucket).put_object(Key=filename,Body=upload_data)
 
+若要自己选定文件位置，可以使用以下代码：
+import os
+import datetime
+import socket
+from boto3.session import Session
+
+hostname = socket.gethostname()
+#filename=hostname+"_"+str(datetime.datetime.now())+".jpg"
+#filename = filename.replace(' ','-')
+#os.system("sudo fswebcam -r 1920*1080 --no-banner -S 3 " + filename)
+aws_key = ""
+aws_secret = ""
+session = Session(aws_access_key_id=aws_key,aws_secret_access_key=aws_secret,region_name="cn-north-1")
+s3 = session.resource("s3")
+client = session.client("s3")
+bucket = ""
+filename = input("输入上传文件位置：")
+upload_data = open(filename, "rb")
+file_obj = s3.Bucket(bucket).put_object(Key=filename,Body=upload_data)
+
 4.将uploadphoto.py路径映射到全局命令
 sudo ln -s /home/pi/xxx/upload_photo/uploadphoto.py /usr/bin/uploadphoto.py
 
